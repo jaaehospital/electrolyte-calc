@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>Electrolyte Correction Calculator | JAAE Hospital</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#D8E4F0;padding:16px;font-size:13px}
+.wrap{max-width:560px;margin:0 auto;background:#EEF2F7;border-radius:24px;padding:14px;box-shadow:0 4px 20px rgba(27,58,92,0.13)}
+.hdr{background:#1B3A5C;border-radius:14px;padding:14px 16px;margin-bottom:10px;color:#fff;text-align:center}
+.hdr-top{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:3px}
+.hdr h1{font-size:16px;font-weight:700}
+.hdr-jaae{font-size:14px;font-weight:700;color:#4AE880;white-space:nowrap}
+.hdr p{font-size:11px;opacity:.8;line-height:1.4}
+.card{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+.card-title{font-size:11px;font-weight:700;color:#888;letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.field label{display:block;font-size:11px;color:#666;font-weight:600;margin-bottom:4px}
+.field input,.field select{width:100%;padding:10px 11px;font-size:15px;border:1.5px solid #DDE2EA;border-radius:9px;background:#fff;color:#222;outline:none;-webkit-appearance:none}
+.field input:focus,.field select:focus{border-color:#2E6DA4}
+.field input::placeholder{color:#C8CDD5;font-size:13px}
+.sex-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sb{padding:10px 8px;border:1.5px solid #DDE2EA;border-radius:9px;background:#fff;font-size:13px;font-weight:700;color:#888;cursor:pointer;text-align:center;width:100%}
+.sb.m{background:#1B3A5C;border-color:#1B3A5C;color:#fff}
+.sb.f{background:#8B1A1A;border-color:#8B1A1A;color:#fff}
+.crcl-panel{border-radius:12px;padding:16px 18px;margin-bottom:10px;display:none}
+.crcl-panel.show{display:block}
+.crcl-lbl{font-size:11px;font-weight:600;opacity:.85;margin-bottom:2px}
+.crcl-big{font-size:54px;font-weight:900;line-height:1;letter-spacing:-2px}
+.crcl-unit{font-size:12px;opacity:.8;margin-bottom:4px}
+.crcl-info{font-size:12px;opacity:.9;line-height:1.5}
+.bg-g{background:#1A7A3C;color:#fff}.bg-b{background:#1B3A5C;color:#fff}
+.bg-a{background:#9a5a00;color:#fff}.bg-r{background:#8B1A1A;color:#fff}.bg-d{background:#2C2C2C;color:#fff}
+.route-card{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+.route-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.route-btn{padding:12px 6px;border:2px solid #DDE2EA;border-radius:11px;background:#fff;font-size:12px;font-weight:700;color:#888;cursor:pointer;text-align:center;width:100%;line-height:1.4;transition:all .15s}
+.route-btn .ri{font-size:18px;display:block;margin-bottom:3px}
+.route-btn.on{background:#1B3A5C;border-color:#1B3A5C;color:#fff}
+.day-row{display:flex;gap:6px;flex-wrap:wrap}
+.day-btn{flex:1;min-width:46px;padding:10px 4px;border:1.5px solid #DDE2EA;border-radius:9px;background:#fff;font-size:13px;font-weight:700;color:#888;cursor:pointer;text-align:center}
+.day-btn.on{background:#2E6DA4;border-color:#2E6DA4;color:#fff}
+.calc-btn{width:100%;padding:15px;background:#1B3A5C;color:#fff;border:none;border-radius:11px;font-size:16px;font-weight:700;cursor:pointer;margin-top:12px}
+.calc-btn:active{opacity:.85}
+.reset-btn{width:100%;padding:13px;background:#fff;color:#1B3A5C;border:1.5px solid #1B3A5C;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;margin-top:6px}
+.warn-box{background:#FDEAEA;border:1.5px solid #E8A0A0;border-radius:9px;padding:10px 12px;margin-bottom:10px}
+.warn-box .wt{font-size:11px;font-weight:700;color:#8B1A1A;margin-bottom:4px}
+.warn-box .wr{font-size:12px;color:#5c1010;line-height:1.6;padding-left:14px;position:relative;margin-bottom:2px}
+.warn-box .wr::before{content:'⚠';position:absolute;left:0}
+.result-card{background:#fff;border-radius:12px;overflow:hidden;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+.rc-hdr{padding:12px 14px;color:#fff}
+.rc-name{font-size:15px;font-weight:700;margin-bottom:1px}
+.rc-eng{font-size:10px;opacity:.85}
+.rc-body{padding:12px 14px}
+.ir{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:.5px solid #F0F4F8}
+.ir:last-of-type{border-bottom:none}
+.ir-lbl{font-size:11px;color:#888;flex-shrink:0;width:110px}
+.ir-val{font-size:13px;font-weight:600;color:#222;text-align:right;flex:1;word-break:keep-all;overflow-wrap:break-word}
+.day-sched{margin-top:8px;border-radius:9px;overflow:hidden;border:1.5px solid #ddd}
+.day-sched-ttl{font-size:11px;font-weight:700;padding:7px 12px;color:#fff}
+.day-tbl{width:100%;border-collapse:collapse}
+.day-tbl th{font-size:10px;font-weight:700;padding:6px 6px;text-align:center;border-bottom:1.5px solid rgba(0,0,0,0.15);color:#fff;opacity:.92}
+.day-tbl th:first-child{text-align:left;width:42px}
+.day-tbl td{font-size:11px;padding:7px 6px;text-align:center;border-bottom:.5px solid #E8EEF4;vertical-align:top;line-height:1.5;word-break:keep-all}
+.day-tbl td:first-child{font-weight:700;text-align:left;width:42px;vertical-align:middle}
+.day-tbl tr:last-child td{border-bottom:none}
+.note-box{font-size:11px;color:#555;padding:9px 11px;background:#F8F9FA;border-radius:8px;margin-top:8px;line-height:1.7}
+.note-box b{color:#1B3A5C}
+.formulary-box{background:#F0F4FA;border:1.5px solid #C5D8EF;border-radius:9px;padding:10px 12px;margin-top:8px}
+.formulary-ttl{font-size:10px;font-weight:700;color:#1B3A5C;margin-bottom:5px}
+.formulary-row{font-size:12px;color:#333;line-height:1.65;padding-left:16px;position:relative;margin-bottom:2px}
+.formulary-row::before{content:'•';position:absolute;left:0;color:#1A7A3C;font-size:14px;font-weight:700;line-height:1.4}
+.danger-box{background:#FDEAEA;border:1.5px solid #f0a0a0;border-radius:9px;padding:9px 12px;margin-top:8px}
+.danger-ttl{font-size:10px;font-weight:700;color:#8B1A1A;margin-bottom:4px}
+.danger-row{font-size:11px;color:#5c1010;line-height:1.65;padding-left:16px;position:relative;margin-bottom:2px}
+.danger-row::before{content:'⚠';position:absolute;left:0}
+.tag{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;margin:1px}
+.tag-iv{background:#E6F1FB;color:#1B3A5C}
+.tag-po{background:#E6F4EC;color:#1A5C3B}
+.menu-tabs{display:flex;gap:6px;margin-bottom:10px}
+.menu-tab{flex:1;padding:11px 4px;border-radius:11px;background:#fff;border:1.5px solid #DDE2EA;text-align:center;font-size:12px;font-weight:700;color:#888;cursor:pointer}
+.menu-tab.on{background:#1B3A5C;border-color:#1B3A5C;color:#fff}
+.footer-note{font-size:11px;color:#789;text-align:center;padding:10px 4px 2px;line-height:1.6}
+select{cursor:pointer}
+.combo-box{border:1.5px solid #DDE2EA;border-radius:11px;padding:11px 12px;margin-top:9px;background:#FAFCFE}
+.combo-box.best{border-color:#1A7A3C;background:#F1FAF4}
+.combo-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.combo-name{font-size:12.5px;font-weight:700;color:#1B3A5C}
+.combo-tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;background:#1A7A3C;color:#fff}
+.combo-line{font-size:12px;color:#333;line-height:1.7;padding-left:14px;position:relative;margin-bottom:1px}
+.combo-line::before{content:'–';position:absolute;left:0;color:#2E6DA4}
+.combo-total{font-size:11px;color:#666;margin-top:5px;padding-top:5px;border-top:.5px dashed #DDE2EA}
+.day-plan{margin-top:8px;border-radius:9px;overflow:hidden;border:1.5px solid #ddd}
+.day-plan-ttl{font-size:11.5px;font-weight:700;padding:8px 12px;color:#fff}
+.day-plan-tbl{width:100%;border-collapse:collapse}
+.day-plan-tbl th{font-size:10px;font-weight:700;padding:6px 6px;text-align:center;border-bottom:1.5px solid rgba(0,0,0,.15);color:#fff;opacity:.92;background:rgba(0,0,0,.08)}
+.day-plan-tbl th:first-child{text-align:left;width:54px}
+.day-plan-tbl td{font-size:11.5px;padding:7px 6px;text-align:left;border-bottom:.5px solid #E8EEF4;vertical-align:top;line-height:1.55}
+.day-plan-tbl td:first-child{font-weight:700;text-align:left;width:54px;vertical-align:middle;color:#1B3A5C}
+.day-plan-tbl tr:last-child td{border-bottom:none}
+.bag-note{font-size:10.5px;color:#789;padding:6px 10px;background:#F4F7FA}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hdr">
+    <div class="hdr-top">
+      <h1>Electrolyte Correction Calculator</h1>
+      <span class="hdr-jaae">JAAE Hospital</span>
+    </div>
+    <p>전해질 교정 계산기 · IV / PO formulary-based dosing</p>
+  </div>
+
+  <!-- PATIENT INFO -->
+  <div class="card">
+    <div class="card-title">Patient Information</div>
+    <div class="g2">
+      <div class="field"><label>Age (yr)</label><input type="number" id="age" placeholder="e.g. 78"></div>
+      <div class="field"><label>Weight (kg)</label><input type="number" id="wt" placeholder="e.g. 55"></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>Height (cm)</label><input type="number" id="ht" placeholder="e.g. 160"></div>
+      <div class="field"><label>Serum Cr (mg/dL)</label><input type="number" step="0.01" id="cr" placeholder="e.g. 0.8"></div>
+    </div>
+    <div class="field" style="margin-bottom:8px">
+      <label>Sex</label>
+      <div class="sex-row">
+        <button type="button" class="sb" id="bm" onclick="setSex('M')">Male</button>
+        <button type="button" class="sb" id="bf" onclick="setSex('F')">Female</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CURRENT LABS -->
+  <div class="card">
+    <div class="card-title">Current Labs</div>
+    <div class="g3">
+      <div class="field"><label>Na (mEq/L)</label><input type="number" step="0.1" id="na0" placeholder="e.g. 126"></div>
+      <div class="field"><label>K (mEq/L)</label><input type="number" step="0.1" id="k0" placeholder="e.g. 5.7"></div>
+      <div class="field"><label>Cl (mEq/L)</label><input type="number" step="0.1" id="cl0" placeholder="optional"></div>
+    </div>
+    <div class="g2">
+      <div class="field"><label>BUN (mg/dL)</label><input type="number" step="0.1" id="bun0" placeholder="optional"></div>
+      <div class="field"><label>&nbsp;</label></div>
+    </div>
+  </div>
+
+  <!-- TARGETS -->
+  <div class="card">
+    <div class="card-title">Target Values</div>
+    <div class="g2">
+      <div class="field"><label>Target Na (mEq/L)</label><input type="number" step="0.1" id="naT" placeholder="e.g. 135"></div>
+      <div class="field"><label>Target K (mEq/L)</label><input type="number" step="0.1" id="kT" placeholder="e.g. 4.5"></div>
+    </div>
+  </div>
+
+  <!-- CORRECTION PERIOD -->
+  <div class="card">
+    <div class="card-title">Correction Period</div>
+    <div class="day-row" id="dayRow">
+      <button type="button" class="day-btn" data-d="1" onclick="setDays(1)">1 day</button>
+      <button type="button" class="day-btn" data-d="2" onclick="setDays(2)">2 days</button>
+      <button type="button" class="day-btn" data-d="3" onclick="setDays(3)">3 days</button>
+      <button type="button" class="day-btn" data-d="4" onclick="setDays(4)">4 days</button>
+      <button type="button" class="day-btn" data-d="5" onclick="setDays(5)">5 days</button>
+    </div>
+  </div>
+
+  <!-- ROUTE -->
+  <div class="route-card">
+    <div class="card-title">Route Preference</div>
+    <div class="route-row">
+      <button type="button" class="route-btn" id="r_iv" onclick="setRoute('IV')">
+        <span class="ri">💉</span>IV only
+      </button>
+      <button type="button" class="route-btn" id="r_po" onclick="setRoute('PO')">
+        <span class="ri">💊</span>PO only
+      </button>
+      <button type="button" class="route-btn" id="r_both" onclick="setRoute('BOTH')">
+        <span class="ri">⚕️</span>IV + PO
+      </button>
+    </div>
+  </div>
+
+  <button class="calc-btn" onclick="calculate()">Calculate Correction Plan</button>
+
+  <!-- CrCl panel -->
+  <div class="crcl-panel" id="crclPanel">
+    <div class="crcl-lbl">Creatinine Clearance (Cockcroft-Gault)</div>
+    <div class="crcl-big" id="crclNum">--</div>
+    <div class="crcl-unit">mL/min</div>
+    <div class="crcl-info" id="crclInfo"></div>
+  </div>
+
+  <div id="results"></div>
+
+  <div class="footer-note">
+    Made by Kyung Ho Shin
+  </div>
+
+</div>
+
+<script>
+/* ═══════════════════════ STATE ═══════════════════════ */
+var sex=null, days=null, route=null, lastCrcl=null;
+
+function setSex(s){
+  sex=s;
+  document.getElementById('bm').className='sb'+(s==='M'?' m':'');
+  document.getElementById('bf').className='sb'+(s==='F'?' f':'');
+}
+function setDays(d){
+  days=d;
+  document.querySelectorAll('.day-btn').forEach(function(b){
+    b.className='day-btn'+(parseInt(b.dataset.d,10)===d?' on':'');
+  });
+}
+function setRoute(r){
+  route=r;
+  document.getElementById('r_iv').className='route-btn'+(r==='IV'?' on':'');
+  document.getElementById('r_po').className='route-btn'+(r==='PO'?' on':'');
+  document.getElementById('r_both').className='route-btn'+(r==='BOTH'?' on':'');
+}
+
+/* ═══════════════════════ FORMULARY (JAAE Hospital — confirmed stock only) ═══════════════════════ */
+// Sodium agents
+var BAG_3NS  = {name:'3% NaCl 500 mL bag', vol:500, mEqPerBag:256.5, maxHoursPerBag:48};
+var BAG_045  = {name:'0.45% NaCl 500 mL bag', vol:500, mEqPerBag:38.5, maxHoursPerBag:48};
+var SALT_1G  = {name:'Salt (NaCl) 1 g packet', mEqPerUnit:17};
+var SALT_2G  = {name:'Salt (NaCl) 2 g packet', mEqPerUnit:34};
+
+// Potassium agents
+var KCL_IV   = {name:'KCl injection 20 mL ampule', mEqPerUnit:40, maxConcPerL:40, maxRateMEqPerHr:10};
+var KCONTIN  = {name:'K-Contin SR tab', mEqPerUnit:8};
+var PKCL     = {name:'KCl 1g tab', mEqPerUnit:5};
+
+var KALIMATE = {name:'Calcium polystyrene sulfonate 5 g (Kalimate)', role:'GI K+ removal'};
+var INSULIN_GLU = {name:'Regular insulin 10 U IV + 50% glucose 50 mL IV', role:'Intracellular K+ shift'};
+var LASIX_IV = {name:'Furosemide 20 mg IV', role:'Renal K+ excretion'};
+var LASIX_PO = {name:'Furosemide 40 mg PO', role:'Renal K+ excretion'};
+var TORSEM_PO = {name:'Torsemide 5 mg PO', role:'Renal K+ excretion'};
+var CA_GLUCONATE = {name:'Calcium Gluconate injection', conc:'104.2 mg/mL, 20 mL vial', role:'Membrane stabilization — give first if ECG changes present'};
+
+/* ═══════════════════════ HELPERS ═══════════════════════ */
+function calcIBW(male, htCm){
+  var inches = htCm/2.54;
+  var over60 = inches-60;
+  if(over60<0) over60=0;
+  return male ? 50+2.3*over60 : 45.5+2.3*over60;
+}
+function calcCG(age, cr, wtKg, male){
+  var v = ((140-age)*wtKg)/(72*cr);
+  if(!male) v*=0.85;
+  return v;
+}
+function round1(x){ return Math.round(x*10)/10; }
+
+/* ═══════════════════════ MAIN CALCULATION ═══════════════════════ */
+function calculate(){
+  var age=parseFloat(document.getElementById('age').value);
+  var wt=parseFloat(document.getElementById('wt').value);
+  var ht=parseFloat(document.getElementById('ht').value);
+  var cr=parseFloat(document.getElementById('cr').value);
+  var na0=parseFloat(document.getElementById('na0').value);
+  var k0=parseFloat(document.getElementById('k0').value);
+  var naT=parseFloat(document.getElementById('naT').value);
+  var kT=parseFloat(document.getElementById('kT').value);
+
+  if(!age||age<=0){alert('Please enter age.');return;}
+  if(!sex){alert('Please select sex.');return;}
+  if(!wt||wt<=0){alert('Please enter weight.');return;}
+  if(!ht||ht<=0){alert('Please enter height.');return;}
+  if(!cr||cr<=0){alert('Please enter serum creatinine.');return;}
+  if(isNaN(na0)&&isNaN(k0)){alert('Please enter at least current Na or current K.');return;}
+  if(isNaN(naT)&&isNaN(kT)){alert('Please enter at least one target value (Na or K).');return;}
+  if(!days){alert('Please select a correction period.');return;}
+  if(!route){alert('Please select a route preference.');return;}
+
+  var male = sex==='M';
+  var ibw = calcIBW(male, ht);
+  var dosingWt = wt<=ibw ? wt : ibw;
+  var crcl = round1(calcCG(age, cr, dosingWt, male));
+  lastCrcl = crcl;
+
+  var panel=document.getElementById('crclPanel');
+  panel.className='crcl-panel show '+(crcl>=60?'bg-g':crcl>=40?'bg-b':crcl>=20?'bg-a':crcl>=10?'bg-r':'bg-d');
+  document.getElementById('crclNum').textContent=crcl;
+  var stg=crcl>=60?'Normal / mild reduction':crcl>=40?'Mild–moderate reduction':crcl>=20?'Moderate–severe reduction':crcl>=10?'Severe reduction':'Renal failure range';
+  document.getElementById('crclInfo').textContent=stg+' · IBW '+ibw.toFixed(1)+' kg'+(wt>ibw?' → IBW used for renal dosing':' → ABW used');
+
+  var tbw = male
+    ? (2.447 - 0.09516*age + 0.1074*ht + 0.3362*wt)
+    : (-2.097 + 0.1069*ht + 0.2466*wt);
+  if(tbw<10) tbw = wt*(male?0.6:0.5);
+
+  var html='';
+  var warnRows=[];
+
+  if(!isNaN(na0) && !isNaN(naT) && na0!==naT){
+    var dailyRateChange = (naT-na0)/days;
+    if(Math.abs(dailyRateChange)>10){
+      warnRows.push('Planned Na correction rate ('+Math.abs(dailyRateChange).toFixed(1)+' mEq/L/day) exceeds the 10–12 mEq/L/24h safety limit — consider extending the correction period.');
+    }
+  }
+  if(!isNaN(k0) && k0>5.5){
+    warnRows.push('K > 5.5 mEq/L — hyperkalemia protocol triggered. If ECG changes are present, give Calcium Gluconate first for membrane stabilization before any K-lowering measure.');
+  }
+  if(!isNaN(k0) && k0<3.0){
+    warnRows.push('K < 3.0 mEq/L — severe hypokalemia. IV correction generally indicated; cardiac monitoring recommended.');
+  }
+  if(crcl<30){
+    warnRows.push('CrCl < 30 mL/min — reduce IV fluid infusion rate; risk of volume overload and impaired K excretion. Avoid aggressive KCl supplementation without close monitoring.');
+  }
+  if(warnRows.length){
+    html+='<div class="warn-box"><div class="wt">⚠ CLINICAL WARNINGS</div>'+
+      warnRows.map(function(w){return '<div class="wr">'+w+'</div>';}).join('')+
+      '</div>';
+  }
+
+  if(!isNaN(na0) && !isNaN(naT) && na0!==naT){
+    html+=buildNaCard(na0, naT, days, tbw, route, crcl);
+  }
+  if(!isNaN(k0) && !isNaN(kT) && k0!==kT){
+    html+=buildKCard(k0, kT, days, wt, route, crcl);
+  }
+  if(html.indexOf('result-card')===-1){
+    html+='<div class="note-box">No correction plan generated — current and target values are equal, or insufficient data was entered for Na/K planning.</div>';
+  }
+
+  html+='<button class="reset-btn" onclick="resetAll()">↺ New Calculation</button>';
+  document.getElementById('results').innerHTML=html;
+  document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ═══════════════════════ SODIUM: BAG SCHEDULING ═══════════════════════
+   A 500 mL bag (3% or 0.45%) can run up to 48h (maxHoursPerBag) once spiked.
+   To keep plans realistic (never "12 bags in one day"), we cap the number
+   of bags that can realistically run per day: hypertonic 3% NaCl is capped
+   at 1 bag/day (slow, monitored correction); 0.45% NaCl / D5W is capped at
+   3 bags/day (routine maintenance-type infusion pace).
+═══════════════════════════════════════════════════════════════════ */
+var MAX_BAGS_PER_DAY_HYPERTONIC = 1;  // 3% NaCl
+var MAX_BAGS_PER_DAY_HYPOTONIC  = 3;  // 0.45% NaCl / D5W
+
+function buildNaBagSchedule(totalMEq, days, bag, maxBagsPerDay){
+  var totalHours = days*24;
+  var maxTotalBags = maxBagsPerDay*days;
+  var bagsNeeded = Math.min(Math.ceil(totalMEq / bag.mEqPerBag), maxTotalBags);
+  bagsNeeded = Math.max(1, bagsNeeded);
+  var hoursPerBag = totalHours / bagsNeeded;
+  if(hoursPerBag > bag.maxHoursPerBag) hoursPerBag = bag.maxHoursPerBag;
+  var ratePerBag = bag.vol / hoursPerBag;
+  var capped = Math.ceil(totalMEq/bag.mEqPerBag) > maxTotalBags;
+  return {
+    bagsNeeded: bagsNeeded,
+    hoursPerBag: round1(hoursPerBag),
+    ratePerBag: round1(ratePerBag),
+    totalMEqDelivered: bagsNeeded*bag.mEqPerBag,
+    totalVolume: bagsNeeded*bag.vol,
+    capped: capped
+  };
+}
+
+function buildNaBagScheduleByVolume(totalVolNeededML, days, bag, maxBagsPerDay){
+  var totalHours = days*24;
+  var maxTotalBags = maxBagsPerDay*days;
+  var bagsNeeded = Math.min(Math.ceil(totalVolNeededML / bag.vol), maxTotalBags);
+  bagsNeeded = Math.max(1, bagsNeeded);
+  var hoursPerBag = totalHours / bagsNeeded;
+  if(hoursPerBag > bag.maxHoursPerBag) hoursPerBag = bag.maxHoursPerBag;
+  var ratePerBag = bag.vol / hoursPerBag;
+  var capped = Math.ceil(totalVolNeededML/bag.vol) > maxTotalBags;
+  return {
+    bagsNeeded: bagsNeeded,
+    hoursPerBag: round1(hoursPerBag),
+    ratePerBag: round1(ratePerBag),
+    totalVolume: bagsNeeded*bag.vol,
+    capped: capped
+  };
+}
+
+/* ---------- Sodium correction card ---------- */
+function buildNaCard(na0, naT, days, tbw, route, crcl){
+  var direction = naT>na0 ? 'up' : 'down';
+  var totalDeltaNa = Math.abs(naT-na0)*tbw; // mEq total over whole period
+  var dailyRateChange = (naT-na0)/days;
+
+  var hdrColor = direction==='up' ? '#1B3A5C' : '#8B1A1A';
+  var title = direction==='up' ? 'Sodium Correction Plan (Hyponatremia → Target)' : 'Sodium Correction Plan (Hypernatremia → Target)';
+
+  var body='<div class="ir"><span class="ir-lbl">Current → Target Na</span><span class="ir-val">'+na0+' → '+naT+' mEq/L</span></div>'+
+    '<div class="ir"><span class="ir-lbl">Total body water (est.)</span><span class="ir-val">'+tbw.toFixed(1)+' L</span></div>'+
+    '<div class="ir"><span class="ir-lbl">Total Na needed</span><span class="ir-val">'+Math.round(totalDeltaNa)+' mEq over '+days+' day(s)</span></div>'+
+    '<div class="ir"><span class="ir-lbl">Target daily rate</span><span class="ir-val">'+dailyRateChange.toFixed(1)+' mEq/L/day</span></div>';
+
+  body+='<div class="note-box"><b>Safety limit:</b> Max correction rate 10–12 mEq/L per 24h (8 mEq/L/24h preferred in high-risk patients: malnutrition, alcoholism, liver disease, hypokalemia). '+
+    (Math.abs(dailyRateChange)>10 ? '<b style="color:#8B1A1A">Current plan EXCEEDS this limit — extend correction period.</b>' : 'Current plan is within the safety limit.')+
+    '</div>';
+
+  var optHtml='';
+
+  if(direction==='up'){
+    var mainBag = BAG_3NS, mainBagLabel='3% NaCl 500 mL';
+    var ivSched = buildNaBagSchedule(totalDeltaNa, days, mainBag, MAX_BAGS_PER_DAY_HYPERTONIC);
+
+    // All realistic PO options (whole-packet, clean dosing frequencies)
+    var dailyMEq = totalDeltaNa/days;
+    var poChoices = [
+      {label:'1 g packet TID', unitsPerDay:3, mEqPerUnit:SALT_1G.mEqPerUnit, itemName:'Salt (NaCl) 1 g packet'},
+      {label:'1 g packet QID', unitsPerDay:4, mEqPerUnit:SALT_1G.mEqPerUnit, itemName:'Salt (NaCl) 1 g packet'},
+      {label:'2 g packet BID', unitsPerDay:2, mEqPerUnit:SALT_2G.mEqPerUnit, itemName:'Salt (NaCl) 2 g packet'},
+      {label:'2 g packet TID', unitsPerDay:3, mEqPerUnit:SALT_2G.mEqPerUnit, itemName:'Salt (NaCl) 2 g packet'}
+    ];
+    var poOptions = pickRealisticPOOptions(poChoices, dailyMEq, days);
+
+    optHtml+='<div class="formulary-box"><div class="formulary-ttl">AVAILABLE OPTIONS — JAAE FORMULARY ONLY</div>';
+
+    if(route==='IV' || route==='BOTH'){
+      optHtml+=renderIVOption('A', mainBagLabel, ivSched, totalDeltaNa, days,
+        'Requires central or large peripheral line monitoring; check Na q6–8h during infusion.', route==='IV');
+    }
+    if(route==='PO' || route==='BOTH'){
+      optHtml+=renderPOOptionsList(poOptions, totalDeltaNa, days, 'mEq Na', route==='PO');
+    }
+    if(route==='BOTH'){
+      optHtml+=renderComboList_Na(mainBag, mainBagLabel, totalDeltaNa, days, poChoices);
+    }
+
+    optHtml+='<div class="formulary-row" style="margin-top:6px">Concurrent fluid restriction (≤1,000–1,200 mL/day) is first-line for dilutional/euvolemic hyponatremia and reduces the IV/PO Na load required to reach target.</div>';
+    optHtml+='</div>';
+
+    // Day-by-day schedule reflecting the actual route selection
+    optHtml+=buildNaDaySchedule(route, direction, mainBagLabel, ivSched, poOptions[0], days);
+
+  } else {
+    var mainBag2 = BAG_045, mainBagLabel2='0.45% NaCl 500 mL';
+    var waterDeficit = tbw*((na0/naT)-1);
+    if(waterDeficit<0 || isNaN(waterDeficit)) waterDeficit = totalDeltaNa/77*0.5;
+    var waterDeficitML = waterDeficit*1000;
+    var ivSched2 = buildNaBagScheduleByVolume(waterDeficitML, days, mainBag2, MAX_BAGS_PER_DAY_HYPOTONIC);
+    var dailyWaterPO = Math.round(waterDeficitML/days);
+
+    optHtml+='<div class="formulary-box"><div class="formulary-ttl">AVAILABLE OPTIONS — JAAE FORMULARY ONLY</div>';
+
+    if(route==='IV' || route==='BOTH'){
+      optHtml+=renderIVOption('A', mainBagLabel2, ivSched2, waterDeficitML, days,
+        'Add to maintenance fluid requirement. If Na > 145 and hemodynamically stable, D5W 500 mL may be substituted for part of the regimen as a pure free-water source.', route==='IV', true);
+    }
+    if(route==='PO' || route==='BOTH'){
+      optHtml+='<div class="combo-box'+(route==='PO'?' best':'')+'"><div class="combo-hdr"><span class="combo-name">PO Option A — Enteral/oral free water</span>'+(route==='PO'?'<span class="combo-tag">RECOMMENDED</span>':'')+'</div>'+
+        '<div class="combo-line">Free water via tube feeding flushes or oral water — ≈'+dailyWaterPO+' mL/day, '+Math.round(waterDeficitML)+' mL total over '+days+' day(s).</div>'+
+        '<div class="combo-total">No IV fluid required for the free-water component if enteral/oral intake is reliable and tolerated. Switch to IV if intake is inadequate or correction stalls.</div></div>';
+    }
+    if(route==='BOTH'){
+      var ivShareDeficit = waterDeficitML*0.6;
+      var ivPortionSched2 = buildNaBagScheduleByVolume(ivShareDeficit, days, mainBag2, MAX_BAGS_PER_DAY_HYPOTONIC);
+      var poRemainderDaily = Math.max(0, (waterDeficitML-ivPortionSched2.totalVolume)/days);
+      optHtml+='<div class="combo-box best"><div class="combo-hdr"><span class="combo-name">Combination A — IV + PO/enteral combined</span><span class="combo-tag">RECOMMENDED</span></div>'+
+        '<div class="combo-line">0.45% NaCl 500 mL × '+ivPortionSched2.bagsNeeded+' bag(s), each run over '+ivPortionSched2.hoursPerBag+'h (rate ≈ '+ivPortionSched2.ratePerBag+' mL/h).</div>'+
+        '<div class="combo-line">+ Enteral/oral free water ≈ '+Math.round(poRemainderDaily)+' mL/day, '+Math.round(poRemainderDaily*days)+' mL total over '+days+' day(s).</div>'+
+        '<div class="combo-total">Combined free water ≈ '+Math.round(ivPortionSched2.totalVolume+poRemainderDaily*days)+' mL over '+days+' day(s) (deficit was '+Math.round(waterDeficitML)+' mL). Lower IV volume load while still meeting target.</div></div>';
+    }
+    optHtml+='</div>';
+
+    if(route!=='PO'){
+      optHtml+=buildNaDaySchedule(route, direction, mainBagLabel2, ivSched2, null, days);
+    }
+  }
+
+  return '<div class="result-card">'+
+    '<div class="rc-hdr" style="background:'+hdrColor+'"><div class="rc-name">'+title+'</div>'+
+    '<div class="rc-eng">Adrogué–Madias estimate · TBW-based · full-bag scheduling</div></div>'+
+    '<div class="rc-body">'+body+optHtml+'</div></div>';
+}
+
+/* Pick 2 realistic PO regimens (different packet sizes) closest to the daily target, for side-by-side display */
+function pickRealisticPOOptions(choices, dailyTarget, days){
+  var all = choices.map(function(o){
+    var dailyOut = o.unitsPerDay*o.mEqPerUnit;
+    return {opt:o, dailyOut:dailyOut, diff:Math.abs(dailyOut-dailyTarget), meets:dailyOut>=dailyTarget*0.7};
+  });
+  var scored = all.filter(function(s){return s.meets;});
+  // Fallback: if nothing reaches 70% of target (e.g. severe deficit exceeds realistic PO capacity),
+  // use the highest-output options available so a PO plan can still be shown (with a coverage note).
+  if(!scored.length) scored = all.slice().sort(function(a,b){return b.dailyOut-a.dailyOut;});
+  else scored.sort(function(a,b){return a.diff-b.diff;});
+  // pick best, then best from a *different* item size if available
+  var picks=[];
+  if(scored.length) picks.push(scored[0]);
+  for(var i=1;i<scored.length && picks.length<2;i++){
+    if(scored[i].opt.itemName!==picks[0].opt.itemName){ picks.push(scored[i]); break; }
+  }
+  if(picks.length<2 && scored.length>1) picks.push(scored[1]);
+  return picks.map(function(s){
+    return {
+      itemName:s.opt.itemName, label:s.opt.label, unitsPerDay:s.opt.unitsPerDay,
+      mEqPerUnit:s.opt.mEqPerUnit, dailyMEq:s.dailyOut, totalUnits:s.opt.unitsPerDay*days,
+      totalMEq:s.dailyOut*days
+    };
+  });
+}
+
+function renderIVOption(letter, bagLabel, sched, targetAmt, days, footnote, recommended, isVolumeBased){
+  var deliveredLabel = isVolumeBased
+    ? (sched.totalVolume+' mL delivered vs ≈'+Math.round(targetAmt)+' mL deficit')
+    : ('≈ '+Math.round(sched.totalMEqDelivered)+' mEq Na delivered vs '+Math.round(targetAmt)+' mEq target');
+  return '<div class="combo-box'+(recommended?' best':'')+'"><div class="combo-hdr"><span class="combo-name">IV Option '+letter+' — '+bagLabel+' (full bags)</span>'+(recommended?'<span class="combo-tag">RECOMMENDED</span>':'')+'</div>'+
+    '<div class="combo-line">'+bagLabel+' × '+sched.bagsNeeded+' bag(s) total, each bag run over '+sched.hoursPerBag+'h (rate ≈ '+sched.ratePerBag+' mL/h) — each bag fully infused before the next is hung.</div>'+
+    '<div class="combo-total">'+deliveredLabel+(sched.capped?' — capped at a realistic bag count; reassess with repeat labs':'')+'. '+footnote+'</div></div>';
+}
+
+function renderPOOptionsList(poOptions, totalTarget, days, unitLabel, recommended){
+  var html='';
+  var letters=['A','B','C'];
+  poOptions.forEach(function(p, idx){
+    var shortfall = p.totalMEq < totalTarget*0.85;
+    html+='<div class="combo-box'+(recommended && idx===0?' best':'')+'"><div class="combo-hdr"><span class="combo-name">PO Option '+letters[idx]+' — '+p.itemName+'</span>'+(recommended && idx===0?'<span class="combo-tag">RECOMMENDED</span>':'')+'</div>'+
+      '<div class="combo-line">'+p.label+' (≈ '+Math.round(p.dailyMEq)+' '+unitLabel+'/day), via tube feeding or oral route — '+p.totalUnits+' unit(s) total over '+days+' day(s).</div>'+
+      '<div class="combo-total">Delivers ≈ '+Math.round(p.totalMEq)+' '+unitLabel+' over '+days+' day(s) (target was '+Math.round(totalTarget)+' '+unitLabel+')'+(shortfall?' — <b style="color:#8B1A1A">PO alone likely insufficient for this deficit; consider IV or IV+PO combination, or extend the correction period</b>':'')+'.</div></div>';
+  });
+  return html;
+}
+
+function renderComboList_Na(mainBag, mainBagLabel, totalDeltaNa, days, poChoices){
+  var ivShare = totalDeltaNa*0.6;
+  var ivPortionSched = buildNaBagSchedule(ivShare, days, mainBag, MAX_BAGS_PER_DAY_HYPERTONIC);
+  var remainder = totalDeltaNa - ivPortionSched.totalMEqDelivered;
+  var poDaily = Math.max(0, remainder/days);
+  var picks = pickRealisticPOOptions(poChoices, poDaily, days);
+  var letters=['A','B'];
+  var html='';
+  picks.forEach(function(p, idx){
+    html+='<div class="combo-box best"><div class="combo-hdr"><span class="combo-name">Combination '+letters[idx]+' — IV + PO combined</span><span class="combo-tag">RECOMMENDED</span></div>'+
+      '<div class="combo-line">'+mainBagLabel+' × '+ivPortionSched.bagsNeeded+' bag(s), each run over '+ivPortionSched.hoursPerBag+'h (rate ≈ '+ivPortionSched.ratePerBag+' mL/h).</div>'+
+      '<div class="combo-line">+ '+p.itemName+' — '+p.label+', '+p.totalUnits+' unit(s) total over '+days+' day(s).</div>'+
+      '<div class="combo-total">Combined delivery ≈ '+Math.round(ivPortionSched.totalMEqDelivered+p.totalMEq)+' mEq Na over '+days+' day(s) (target was '+Math.round(totalDeltaNa)+' mEq). Lower IV volume load while still meeting target — useful in fluid-restricted patients.</div></div>';
+  });
+  return html;
+}
+
+/* ---------- Unified day-by-day schedule (IV bag progression + PO doses per day) ---------- */
+function buildNaDaySchedule(route, direction, bagLabel, ivSched, poOption, days){
+  var hdrCol = direction==='up' ? '#1B3A5C' : '#8B1A1A';
+  var rows='';
+  var bagsLeft = ivSched.bagsNeeded;
+  var hoursPerBag = ivSched.hoursPerBag;
+  var hoursElapsedInCurrentBag = 0;
+  var bagIndex = 1;
+  var showIV = (route==='IV' || route==='BOTH');
+  var showPO = (route==='PO' || route==='BOTH') && poOption;
+
+  for(var d=1; d<=days; d++){
+    var lines=[];
+    if(showIV){
+      var dayHoursLeft = 24;
+      var ivLines=[];
+      while(dayHoursLeft>0 && bagsLeft>0){
+        var hoursRemainingInBag = hoursPerBag - hoursElapsedInCurrentBag;
+        var useHours = Math.min(dayHoursLeft, hoursRemainingInBag);
+        ivLines.push('IV: '+bagLabel+' (Bag #'+bagIndex+') at ≈'+ivSched.ratePerBag+' mL/h for '+round1(useHours)+'h');
+        hoursElapsedInCurrentBag += useHours;
+        dayHoursLeft -= useHours;
+        if(hoursElapsedInCurrentBag>=hoursPerBag-0.01){
+          bagsLeft--; bagIndex++; hoursElapsedInCurrentBag=0;
+        }
+      }
+      if(!ivLines.length) ivLines.push('IV: no new bag required — prior bag still running / correction complete');
+      lines = lines.concat(ivLines);
+    }
+    if(showPO){
+      lines.push('PO: '+poOption.itemName+' — '+poOption.label);
+    }
+    rows+='<tr><td>Day '+d+'</td><td>'+lines.join('<br>')+'</td></tr>';
+  }
+
+  var scheduleTitle = (showIV && showPO) ? 'DAY-BY-DAY SCHEDULE (IV + PO)' :
+                       showIV ? 'DAY-BY-DAY IV SCHEDULE' : 'DAY-BY-DAY PO SCHEDULE';
+
+  return '<div class="day-plan">'+
+    '<div class="day-plan-ttl" style="background:'+hdrCol+'">'+scheduleTitle+'</div>'+
+    '<table class="day-plan-tbl"><tr><th>Day</th><th>Regimen</th></tr>'+rows+'</table>'+
+    (showIV ? '<div class="bag-note">Each bag may hang up to 48h once spiked, per facility IV bag policy — bags are not discarded partially used; rate is calculated so the full 500 mL bag is consumed.</div>' : '')+
+    '</div>';
+}
+
+/* ---------- Potassium correction card ---------- */
+function buildKCard(k0, kT, days, wt, route, crcl){
+  var direction = kT>k0 ? 'up' : 'down';
+  var hdrColor = direction==='up' ? '#1A5C3B' : '#8B1A1A';
+  var title = direction==='up' ? 'Potassium Correction Plan (Hypokalemia → Target)' : 'Potassium Reduction Plan (Hyperkalemia → Target)';
+
+  var body='<div class="ir"><span class="ir-lbl">Current → Target K</span><span class="ir-val">'+k0+' → '+kT+' mEq/L</span></div>';
+
+  var combosHtml='';
+
+  if(direction==='up'){
+    var dailyMeq;
+    if(k0<3.0) dailyMeq=50;
+    else if(k0<3.5) dailyMeq=30;
+    else dailyMeq=15;
+    var totalMeq = dailyMeq*days;
+
+    body+='<div class="ir"><span class="ir-lbl">Empiric daily requirement</span><span class="ir-val">≈ '+dailyMeq+' mEq/day</span></div>'+
+      '<div class="ir"><span class="ir-lbl">Total over period</span><span class="ir-val">≈ '+totalMeq+' mEq over '+days+' day(s)</span></div>';
+
+    body+='<div class="note-box"><b>Safety limit (IV KCl):</b> max peripheral concentration 40 mEq/L, max infusion rate 10 mEq/h. Must dilute in ≥500 mL NS — never push undiluted.</div>';
+
+    combosHtml+='<div class="formulary-box"><div class="formulary-ttl">AVAILABLE OPTIONS — JAAE FORMULARY ONLY</div>';
+
+    var ampPerDay=0, hoursPerAmp=4;
+    var optsPO_K = [
+      {label:'K-Contin SR tab BID', unitsPerDay:2, mEqPerUnit:KCONTIN.mEqPerUnit, itemName:'K-Contin SR tab'},
+      {label:'K-Contin SR tab TID', unitsPerDay:3, mEqPerUnit:KCONTIN.mEqPerUnit, itemName:'K-Contin SR tab'},
+      {label:'KCl 1g tab TID', unitsPerDay:3, mEqPerUnit:PKCL.mEqPerUnit, itemName:'KCl 1g tab'},
+      {label:'KCl 1g tab QID', unitsPerDay:4, mEqPerUnit:PKCL.mEqPerUnit, itemName:'KCl 1g tab'}
+    ];
+    var poPicksK = pickRealisticPOOptions(optsPO_K, dailyMeq, days);
+
+    if(route==='IV' || route==='BOTH'){
+      ampPerDay = Math.ceil(dailyMeq/40);
+      var ampTotal = ampPerDay*days;
+      hoursPerAmp = Math.max(4, round1(40/10));
+      combosHtml+='<div class="combo-box'+(route==='IV'?' best':'')+'"><div class="combo-hdr"><span class="combo-name">IV Option A — KCl in NS</span>'+(route==='IV'?'<span class="combo-tag">RECOMMENDED</span>':'')+'</div>'+
+        '<div class="combo-line">KCl injection 20 mL ampule (40 mEq) × '+ampPerDay+'/day, each diluted in ≥500 mL NS, infused over ≥'+hoursPerAmp+'h (≤10 mEq/h) — '+ampTotal+' ampule(s) total over '+days+' day(s).</div>'+
+        '<div class="combo-total">Delivers ≈ '+(ampPerDay*40)+' mEq/day. Requires infusion pump and telemetry/ECG monitoring during administration.</div></div>';
+    }
+
+    if(route==='PO' || route==='BOTH'){
+      combosHtml+=renderPOOptionsList(poPicksK, totalMeq, days, 'mEq K', route==='PO');
+    }
+
+    if(route==='BOTH'){
+      var ivShareDaily = Math.ceil(dailyMeq*0.5/40)*40;
+      var poShareDaily = Math.max(0, dailyMeq-ivShareDaily);
+      var ivAmpPerDay = Math.max(1, Math.round(ivShareDaily/40));
+      var comboPicksK = pickRealisticPOOptions(optsPO_K, poShareDaily, days);
+      var lettersK=['A','B'];
+      comboPicksK.forEach(function(p, idx){
+        combosHtml+='<div class="combo-box best"><div class="combo-hdr"><span class="combo-name">Combination '+lettersK[idx]+' — IV + PO combined</span><span class="combo-tag">RECOMMENDED</span></div>'+
+          '<div class="combo-line">KCl injection 20 mL ampule × '+ivAmpPerDay+'/day diluted in ≥500 mL NS, infused over ≥'+hoursPerAmp+'h.</div>'+
+          '<div class="combo-line">+ '+p.itemName+' — '+p.label+', '+p.totalUnits+' tab(s) total over '+days+' day(s).</div>'+
+          '<div class="combo-total">Combined daily delivery ≈ '+(ivAmpPerDay*40+p.dailyMEq)+' mEq/day — allows faster correction than PO alone while reducing IV ampule burden.</div></div>';
+      });
+    }
+    combosHtml+='<div class="formulary-row" style="margin-top:6px">If on loop diuretics (Furosemide/Torsemide), monitor K every 1–2 days — accelerated renal loss expected. If receiving TPN (Three-Chamber bag), subtract ≈47 mEq K already supplied per bag before adding further KCl.</div>';
+    combosHtml+='</div>';
+
+    // Day-by-day K schedule — use the same picks shown in the options above
+    var ivAmpForSchedule = 0, poPickForSchedule = null;
+    if(route==='IV'){
+      ivAmpForSchedule = ampPerDay;
+    } else if(route==='PO'){
+      poPickForSchedule = poPicksK.length ? poPicksK[0] : null;
+    } else if(route==='BOTH'){
+      ivAmpForSchedule = ivAmpPerDay;
+      poPickForSchedule = comboPicksK.length ? comboPicksK[0] : null;
+    }
+    combosHtml+=buildKDaySchedule(route, ivAmpForSchedule, hoursPerAmp, poPickForSchedule, days);
+
+  } else {
+    body+='<div class="note-box">Treatment sequence for hyperkalemia: <b>(1)</b> Calcium Gluconate IV first if ECG changes present (membrane stabilization) → <b>(2)</b> Regular insulin + 50% glucose IV (intracellular shift) → <b>(3)</b> Kalimate (GI removal) → <b>(4)</b> Loop diuretic (renal excretion, requires adequate urine output).</div>';
+
+    combosHtml+='<div class="formulary-box"><div class="formulary-ttl">TREATMENT SEQUENCE — JAAE FORMULARY ONLY</div>';
+    combosHtml+='<div class="formulary-row" style="font-weight:700">Step 1 — Membrane stabilization (if ECG changes present)</div>';
+    combosHtml+='<div class="formulary-row">'+CA_GLUCONATE.name+' ('+CA_GLUCONATE.conc+') — 1 ampule (≈10 mL of the 20 mL vial, ≈1 g) IV slow push over 2–3 min under ECG monitoring. May repeat once if ECG changes persist. Caution with digoxin — infuse slowly.</div>';
+
+    combosHtml+='<div class="formulary-row" style="font-weight:700;margin-top:6px">Step 2 — Intracellular shift</div>';
+    combosHtml+='<div class="formulary-row">'+INSULIN_GLU.name+' — onset 15–30 min, duration 4–6h. Monitor glucose at 30 min, 1h, 2h post-dose.</div>';
+
+    combosHtml+='<div class="formulary-row" style="font-weight:700;margin-top:6px">Step 3 — GI potassium removal</div>';
+    combosHtml+='<div class="formulary-row">'+KALIMATE.name+' — 1 dose (5 g) PO/NG, 1–3 times/day depending on severity and bowel function. Monitor for constipation.</div>';
+
+    if(crcl>=30){
+      combosHtml+='<div class="formulary-row" style="font-weight:700;margin-top:6px">Step 4 — Renal excretion (CrCl ≥ 30 — likely effective)</div>';
+      combosHtml+='<div class="formulary-row">'+LASIX_IV.name+' or '+LASIX_PO.name+' or '+TORSEM_PO.name+' — promotes renal K excretion if adequate urine output is present.</div>';
+    } else {
+      combosHtml+='<div class="formulary-row" style="font-weight:700;margin-top:6px">Step 4 — Renal excretion (CrCl < 30 — reduced efficacy)</div>';
+      combosHtml+='<div class="formulary-row">Loop diuretic effect on K excretion is reduced at this renal function. Consider urgent nephrology consultation / dialysis evaluation if K remains refractory.</div>';
+    }
+    combosHtml+='</div>';
+
+    if(k0>=6.0){
+      combosHtml+='<div class="danger-box"><div class="danger-ttl">CRITICAL — K ≥ 6.0 mEq/L</div>'+
+        '<div class="danger-row">High risk of life-threatening arrhythmia. Obtain immediate ECG. If peaked T waves, widened QRS, or sine wave pattern present, give Calcium Gluconate immediately and consider transfer to a higher level of care — this facility does not stock IV antiarrhythmics for acute ventricular arrhythmia management.</div></div>';
+    }
+  }
+
+  return '<div class="result-card">'+
+    '<div class="rc-hdr" style="background:'+hdrColor+'"><div class="rc-name">'+title+'</div>'+
+    '<div class="rc-eng">Empiric dosing — adjust per repeat labs</div></div>'+
+    '<div class="rc-body">'+body+combosHtml+'</div></div>';
+}
+
+/* ---------- Day-by-day K schedule (IV ampules + PO doses per day) ---------- */
+function buildKDaySchedule(route, ampPerDay, hoursPerAmp, poOption, days){
+  var hdrCol = '#1A5C3B';
+  var showIV = (route==='IV' || route==='BOTH') && ampPerDay>0;
+  var showPO = (route==='PO' || route==='BOTH') && poOption;
+  if(!showIV && !showPO) return '';
+
+  var rows='';
+  for(var d=1; d<=days; d++){
+    var lines=[];
+    if(showIV){
+      for(var a=1; a<=ampPerDay; a++){
+        lines.push('IV: KCl injection 20 mL ampule (40 mEq) #'+a+' in ≥500 mL NS over ≥'+hoursPerAmp+'h');
+      }
+    }
+    if(showPO){
+      lines.push('PO: '+poOption.itemName+' — '+poOption.label);
+    }
+    rows+='<tr><td>Day '+d+'</td><td>'+lines.join('<br>')+'</td></tr>';
+  }
+
+  var scheduleTitle = (showIV && showPO) ? 'DAY-BY-DAY SCHEDULE (IV + PO)' :
+                       showIV ? 'DAY-BY-DAY IV SCHEDULE' : 'DAY-BY-DAY PO SCHEDULE';
+
+  return '<div class="day-plan">'+
+    '<div class="day-plan-ttl" style="background:'+hdrCol+'">'+scheduleTitle+'</div>'+
+    '<table class="day-plan-tbl"><tr><th>Day</th><th>Regimen</th></tr>'+rows+'</table>'+
+    (showIV ? '<div class="bag-note">Each KCl ampule must be diluted in ≥500 mL NS and infused at ≤10 mEq/h (≥4h per ampule) — never push undiluted.</div>' : '')+
+    '</div>';
+}
+
+function resetAll(){
+  ['age','wt','ht','cr','na0','k0','cl0','bun0','naT','kT'].forEach(function(id){
+    document.getElementById(id).value='';
+  });
+  sex=null;days=null;route=null;lastCrcl=null;
+  document.getElementById('bm').className='sb';
+  document.getElementById('bf').className='sb';
+  document.querySelectorAll('.day-btn').forEach(function(b){b.className='day-btn';});
+  document.getElementById('r_iv').className='route-btn';
+  document.getElementById('r_po').className='route-btn';
+  document.getElementById('r_both').className='route-btn';
+  document.getElementById('crclPanel').className='crcl-panel';
+  document.getElementById('results').innerHTML='';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
